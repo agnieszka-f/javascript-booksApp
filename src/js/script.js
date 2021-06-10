@@ -2,14 +2,17 @@ const select = {
 	template: '#template-book',
 	bookList: '.books-list',
 	linkToBook: 'a.book__image',
+	sectionFilter: '.filters',
 };
 const templates = Handlebars.compile(document.querySelector(select.template).innerHTML);
 
 const domTreeElements = {
 	booksContainer: document.querySelector(select.bookList),
+	formFilters: document.querySelector(select.sectionFilter),
 };
 
 const favoriteBooks = [];
+const filters = [];
 
 /* Funkcja, która przechodzi po wszystkich książkach z dataSource.books i renderuje dla nich reprezentacje HTML w liście .books-list. */
 function render(){
@@ -49,3 +52,20 @@ function addingToFavoritue(){
 	});
 }
 addingToFavoritue();
+/* Funkcjonalność umożliwiająca filtrowanie książek */
+function filterBooks(){
+	domTreeElements.formFilters.addEventListener('click', function(){
+		
+		if(event.target.tagName === 'INPUT' && event.target.type === 'checkbox' && event.target.name === 'filter'){
+			
+			const value = event.target.value;
+			
+			if(event.target.checked){
+				filters.push(value); 
+			} else {
+				filters.splice(filters.indexOf(value),1); 
+			}
+		}
+	});
+}
+filterBooks();
