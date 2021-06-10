@@ -29,14 +29,13 @@ render();
 /* Funkcjonalność umożliwiająca dodawanie książek do ulubionych oraz ich usuwanie z ulubionych*/
 function addingToFavoritue(){
 	
-	const linksToBooks = domTreeElements.booksContainer.querySelectorAll(select.linkToBook);
-	
-	for(let book of linksToBooks){
-		
-		book.addEventListener('dblclick', function(event){
-			event.preventDefault();
+	domTreeElements.booksContainer.addEventListener('dblclick', function(event){
 			
-			const clickedBook = this; 
+		event.preventDefault(); 
+				
+			if(event.target.offsetParent.classList.contains('book__image')){
+			
+			const clickedBook = event.target.offsetParent; 
 			const idBook = clickedBook.getAttribute('data-id');
 			
 			if(!favoriteBooks.includes(idBook)){
@@ -46,7 +45,7 @@ function addingToFavoritue(){
 				favoriteBooks.splice(favoriteBooks.indexOf(idBook),1);
 				clickedBook.classList.remove('favorite'); 
 			}
-		});
-	} 
+		}
+	});
 }
 addingToFavoritue();
