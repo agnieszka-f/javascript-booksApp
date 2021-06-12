@@ -1,14 +1,14 @@
 const select = {
-	template: '#template-book',
-	bookList: '.books-list',
-	linkToBook: 'a.book__image',
-	sectionFilter: '.filters',
+  template: '#template-book',
+  bookList: '.books-list',
+  linkToBook: 'a.book__image',
+  sectionFilter: '.filters',
 };
 const templates = Handlebars.compile(document.querySelector(select.template).innerHTML);
 
 const domTreeElements = {
-	booksContainer: document.querySelector(select.bookList),
-	formFilters: document.querySelector(select.sectionFilter),
+  booksContainer: document.querySelector(select.bookList),
+  formFilters: document.querySelector(select.sectionFilter),
 };
 
 const favoriteBooks = [];
@@ -16,56 +16,77 @@ const filters = [];
 
 /* Funkcja, która przechodzi po wszystkich książkach z dataSource.books i renderuje dla nich reprezentacje HTML w liście .books-list. */
 function render(){
-	for(let book of dataSource.books){
+  for(let book of dataSource.books){
 		
-		const htmlString = templates(book);
+    const htmlString = templates(book);
 		
-		const elementDOM = utils.createDOMFromHTML(htmlString);
+    const elementDOM = utils.createDOMFromHTML(htmlString);
 		
-		const container = domTreeElements.booksContainer;
+    const container = domTreeElements.booksContainer;
 		
-		container.appendChild(elementDOM);
-	}
+    container.appendChild(elementDOM);
+  }
 }
 render();
 
 /* Funkcjonalność umożliwiająca dodawanie książek do ulubionych oraz ich usuwanie z ulubionych*/
 function addingToFavoritue(){
 	
-	domTreeElements.booksContainer.addEventListener('dblclick', function(event){
+  domTreeElements.booksContainer.addEventListener('dblclick', function(event){
 			
-		event.preventDefault(); 
+    event.preventDefault(); 
 				
-			if(event.target.offsetParent.classList.contains('book__image')){
+    if(event.target.offsetParent.classList.contains('book__image')){
 			
-			const clickedBook = event.target.offsetParent; 
-			const idBook = clickedBook.getAttribute('data-id');
+      const clickedBook = event.target.offsetParent; 
+      const idBook = clickedBook.getAttribute('data-id');
 			
-			if(!favoriteBooks.includes(idBook)){
-				favoriteBooks.push(idBook);
-				clickedBook.classList.add('favorite'); 
-			} else { 
-				favoriteBooks.splice(favoriteBooks.indexOf(idBook),1);
-				clickedBook.classList.remove('favorite'); 
-			}
-		}
-	});
+      if(!favoriteBooks.includes(idBook)){
+        favoriteBooks.push(idBook);
+        clickedBook.classList.add('favorite');
+      } else { 
+        favoriteBooks.splice(favoriteBooks.indexOf(idBook),1);
+        clickedBook.classList.remove('favorite');
+      }
+    }
+  });
 }
 addingToFavoritue();
 /* Funkcjonalność umożliwiająca filtrowanie książek */
 function filterBooks(){
-	domTreeElements.formFilters.addEventListener('click', function(){
+  domTreeElements.formFilters.addEventListener('click', function(event){
 		
-		if(event.target.tagName === 'INPUT' && event.target.type === 'checkbox' && event.target.name === 'filter'){
+    if(event.target.tagName === 'INPUT' && event.target.type === 'checkbox' && event.target.name === 'filter'){
 			
-			const value = event.target.value;
+      const value = event.target.value; 
 			
-			if(event.target.checked){
-				filters.push(value); 
-			} else {
-				filters.splice(filters.indexOf(value),1); 
-			}
-		}
-	});
+      if(event.target.checked){
+        filters.push(value);
+        hideBooks(value);
+      } else {
+        filters.splice(filters.indexOf(value),1);
+        showBooks(value);
+      }
+    }
+  });
 }
 filterBooks();
+
+function hideBooks(arg){
+  for(let book of dataSource.books){ 
+    if(book.details[arg]) {
+      const bookToHide = domTreeElements.booksContainer.querySelector('.book__image[data-id="'+ book.id +'"]');
+      if(!bookToHide.classList.contains('hidden')) bookToHide.classList.add('hidden');
+    }
+
+  }
+}
+function showBooks(arg){
+  for(let book of dataSource.books){ 
+    if(book.details[arg]) {
+      const bookToShow = domTreeElements.booksContainer.querySelector('.book__image[data-id="'+ book.id +'"]');
+      if(bookToShow.classList.contains('hidden')) bookToShow.classList.remove('hidden');
+    }
+
+  }
+}
